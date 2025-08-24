@@ -1,0 +1,27 @@
+server:
+  port: 8444
+  ssl:
+    enabled: true
+    key-store: classpath:myservice.p12
+    key-store-type: PKCS12
+    key-store-password: password
+
+spring:
+  application:
+    name: file-status-processor
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: status-processor-id
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      username: root
+      password: pass
+      database: fileDB
+      authentication-database: admin
+
+scheduling:
+  enabled: true
+  delay: 15

@@ -9,19 +9,11 @@ server:
 spring:
   application:
     name: file-status-processor
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: status-processor-id
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      username: root
-      password: pass
-      database: fileDB
-      authentication-database: admin
-
-scheduling:
-  enabled: true
-  delay: 15
+  profiles:
+    active: local
+  config:
+    import: configserver:http://localhost:8888
+  cloud:
+    config:
+      enabled: true
+      fail-fast: true

@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: file-status-processor
+
+scheduling:
+  enabled: true
+  delay: 15

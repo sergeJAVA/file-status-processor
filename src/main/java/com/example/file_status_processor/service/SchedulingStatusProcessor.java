@@ -20,7 +20,7 @@ public class SchedulingStatusProcessor {
     private final StatusProcessorService statusProcessorService;
 
     @Scheduled(fixedDelayString = "${scheduling.delay}", timeUnit = TimeUnit.SECONDS)
-    protected void process() {
+    public void process() {
         List<File> files = fileRepository
                 .findByFileStatus(FileStatus.SECOND_VALIDATION_SUCCESS);
         if (files.isEmpty()) {

@@ -52,7 +52,7 @@ public class KafkaTest extends Testcontainer {
 
         await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
             File updated = fileRepository.findByChecksum("integration123").orElseThrow();
-            assertThat(updated.getFileStatus()).isEqualTo(FileStatus.SECOND_VALIDATION_SUCCESS);
+            assertThat(updated.getFileStatus()).isEqualTo(FileStatus.FILE_UPLOADED);
         });
 
     }

@@ -1,5 +1,6 @@
 package com.example.file_status_processor.service.impl;
 
+import com.example.file_status_processor.constant.FileStatus;
 import com.example.file_status_processor.dto.FileDto;
 import com.example.file_status_processor.model.File;
 import com.example.file_status_processor.repository.FileRepository;
@@ -36,17 +37,7 @@ public class StatusProcessorServiceImpl implements StatusProcessorService {
     @Override
     public void updateStatus(FileDto fileDto) {
         Optional<File> existingFile = fileRepository.findByChecksum(fileDto.getChecksum());
-        if (existingFile.isPresent()) {
-            File updated = existingFile.get();
-
-            log.info("The status of the file {} has been updated from {} to {}.",
-                    updated.getFileName(),
-                    updated.getFileStatus(),
-                    fileDto.getFileStatus());
-
-            updated.setFileStatus(fileDto.getFileStatus());
-            fileRepository.save(updated);
-        }
+        existingFile.ifPresent(file -> applyStatusUpdate(file, fileDto));
     }
 
     @Override
@@ -60,8 +51,31 @@ public class StatusProcessorServiceImpl implements StatusProcessorService {
                     .checksum(fileDto.getChecksum())
                     .build();
             fileRepository.save(file);
+        } else {
+            log.info("The file with the checksum {} already exists", fileDto.getChecksum());
         }
+    }
 
+    private void applyStatusUpdate(File file, FileDto fileDto) {
+        FileStatus previousStatus = file.getFileStatus();
+        FileStatus newStatus = fileDto.getFileStatus();
+        file.setFileStatus(newStatus);
+
+        if (newStatus == FileStatus.SECOND_VALIDATION_SUCCESS) {
+            file.setFileBytes(fileDto.getFileBytes());
+            file.setFileStatus(FileStatus.FILE_UPLOADED);
+            log.info("File {} bytes saved, status changed: {} -> {} -> {}",
+                    file.getFileName(),
+                    previousStatus,
+                    FileStatus.SECOND_VALIDATION_SUCCESS,
+                    FileStatus.FILE_UPLOADED);
+        } else {
+            log.info("The status of the file {} has been updated from {} to {}.",
+                    file.getFileName(),
+                    previousStatus,
+                    newStatus);
+        }
+        fileRepository.save(file);
     }
 
 }
